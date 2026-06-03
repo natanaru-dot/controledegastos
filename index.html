@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nosso Caixa</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+  <body>
+    <div class="app-shell">
+      <aside class="sidebar">
+        <div class="brand">
+          <div class="brand-mark">NC</div>
+          <div>
+            <h1>Nosso Caixa</h1>
+            <p>Financas do casal</p>
+          </div>
+        </div>
+
+        <nav class="tabs" aria-label="Navegacao principal">
+          <button class="tab active" data-tab="dashboard" type="button">Resumo</button>
+          <button class="tab" data-tab="entries" type="button">Lancamentos</button>
+          <button class="tab" data-tab="goals" type="button">Metas</button>
+          <button class="tab" data-tab="settings" type="button">Casal</button>
+        </nav>
+      </aside>
+
+      <main class="main">
+        <section class="topbar">
+          <div>
+            <p class="eyebrow" id="monthLabel">Mes atual</p>
+            <h2 id="pageTitle">Resumo</h2>
+          </div>
+          <div class="top-actions">
+            <button class="icon-button" id="exportBtn" type="button" title="Exportar dados" aria-label="Exportar dados">
+              <span aria-hidden="true">↓</span>
+            </button>
+            <button class="primary-button" data-open-entry type="button">+ Lancamento</button>
+          </div>
+        </section>
+
+        <section class="view active" id="dashboardView">
+          <div class="metric-grid">
+            <article class="metric income">
+              <span>Entradas</span>
+              <strong id="incomeTotal">R$ 0,00</strong>
+            </article>
+            <article class="metric expense">
+              <span>Gastos</span>
+              <strong id="expenseTotal">R$ 0,00</strong>
+            </article>
+            <article class="metric balance">
+              <span>Saldo</span>
+              <strong id="balanceTotal">R$ 0,00</strong>
+            </article>
+            <article class="metric fair">
+              <span>Acerto do casal</span>
+              <strong id="settlementText">Em dia</strong>
+            </article>
+          </div>
+
+          <div class="content-grid">
+            <section class="panel">
+              <div class="panel-header">
+                <h3>Gastos por categoria</h3>
+              </div>
+              <div class="category-list" id="categoryList"></div>
+            </section>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h3>Ultimos lancamentos</h3>
+                <button class="ghost-button" data-tab-shortcut="entries" type="button">Ver todos</button>
+              </div>
+              <div class="entry-list compact" id="recentEntries"></div>
+            </section>
+          </div>
+        </section>
+
+        <section class="view" id="entriesView">
+          <div class="toolbar">
+            <div class="segmented" role="tablist" aria-label="Filtro de tipo">
+              <button class="segment active" data-filter="all" type="button">Tudo</button>
+              <button class="segment" data-filter="income" type="button">Entradas</button>
+              <button class="segment" data-filter="expense" type="button">Gastos</button>
+            </div>
+            <button class="primary-button" data-open-entry type="button">+ Novo</button>
+          </div>
+          <div class="entry-list" id="allEntries"></div>
+        </section>
+
+        <section class="view" id="goalsView">
+          <div class="toolbar">
+            <h3>Metas compartilhadas</h3>
+            <button class="primary-button" id="addGoalBtn" type="button">+ Meta</button>
+          </div>
+          <div class="goal-grid" id="goalGrid"></div>
+        </section>
+
+        <section class="view" id="settingsView">
+          <div class="settings-grid">
+            <form class="panel form-panel" id="coupleForm">
+              <div class="panel-header">
+                <h3>Dados do casal</h3>
+              </div>
+              <label for="personAName">
+                Nome 1
+                <input id="personAName" type="text" autocomplete="off" />
+              </label>
+              <label for="personAIncome">
+                Renda mensal 1
+                <input id="personAIncome" type="number" min="0" step="0.01" />
+              </label>
+              <label for="personBName">
+                Nome 2
+                <input id="personBName" type="text" autocomplete="off" />
+              </label>
+              <label for="personBIncome">
+                Renda mensal 2
+                <input id="personBIncome" type="number" min="0" step="0.01" />
+              </label>
+              <button class="primary-button" type="submit">Salvar</button>
+            </form>
+
+            <section class="panel">
+              <div class="panel-header">
+                <h3>Divisao proporcional</h3>
+              </div>
+              <div class="split-card">
+                <div>
+                  <span id="personAShareLabel">Pessoa 1</span>
+                  <strong id="personAShare">50%</strong>
+                </div>
+                <div>
+                  <span id="personBShareLabel">Pessoa 2</span>
+                  <strong id="personBShare">50%</strong>
+                </div>
+              </div>
+              <p class="muted" id="splitHint"></p>
+            </section>
+          </div>
+        </section>
+      </main>
+    </div>
+
+    <dialog class="modal" id="entryModal">
+      <form id="entryForm" method="dialog">
+        <div class="modal-header">
+          <h3>Novo lancamento</h3>
+          <button class="icon-button" value="cancel" type="button" data-close-modal title="Fechar" aria-label="Fechar">×</button>
+        </div>
+        <div class="form-grid">
+          <label for="entryDescription">
+            Descricao
+            <input id="entryDescription" type="text" required maxlength="60" />
+          </label>
+          <label for="entryAmount">
+            Valor
+            <input id="entryAmount" type="number" min="0.01" step="0.01" required />
+          </label>
+          <label for="entryType">
+            Tipo
+            <select id="entryType">
+              <option value="expense">Gasto</option>
+              <option value="income">Entrada</option>
+            </select>
+          </label>
+          <label for="entryCategory">
+            Categoria
+            <select id="entryCategory"></select>
+          </label>
+          <label for="entryPaidBy">
+            Quem pagou
+            <select id="entryPaidBy"></select>
+          </label>
+          <label for="entryDate">
+            Data
+            <input id="entryDate" type="date" required />
+          </label>
+        </div>
+        <div class="modal-actions">
+          <button class="ghost-button" value="cancel" type="button" data-close-modal>Cancelar</button>
+          <button class="primary-button" type="submit">Salvar</button>
+        </div>
+      </form>
+    </dialog>
+
+    <dialog class="modal" id="goalModal">
+      <form id="goalForm" method="dialog">
+        <div class="modal-header">
+          <h3>Nova meta</h3>
+          <button class="icon-button" value="cancel" type="button" data-close-modal title="Fechar" aria-label="Fechar">×</button>
+        </div>
+        <div class="form-grid">
+          <label for="goalName">
+            Nome
+            <input id="goalName" type="text" required maxlength="50" />
+          </label>
+          <label for="goalTarget">
+            Valor alvo
