@@ -58,6 +58,25 @@ const money = new Intl.NumberFormat("pt-BR", {
 });
 
 const elements = {
+  accountAvatar: document.querySelector("#accountAvatar"),
+  myAccountBtn: document.querySelector("#myAccountBtn"),
+  customizationBtn: document.querySelector("#customizationBtn"),
+  securityBtn: document.querySelector("#securityBtn"),
+  inviteBtn: document.querySelector("#inviteBtn"),
+  accountModal: document.querySelector("#accountModal"),
+  accountForm: document.querySelector("#accountForm"),
+  accountName: document.querySelector("#accountName"),
+  accountEmail: document.querySelector("#accountEmail"),
+  profileButton: document.querySelector("#profileButton"),
+  profileDropdown: document.querySelector("#profileDropdown"),
+  profileDropdownName: document.querySelector("#profileDropdownName"),
+  profileDropdownEmail: document.querySelector("#profileDropdownEmail"),
+  loggedUserName: document.querySelector("#loggedUserName"),
+  loginEmail: document.querySelector("#loginEmail"),
+  loginPassword: document.querySelector("#loginPassword"),
+  // Correção: o botão de sair no HTML tem id "logoutMenuBtn", não "logoutBtn".
+  logoutBtn: document.querySelector("#logoutMenuBtn"),
+  mainApp: document.querySelector("#mainApp"),
   tabs: document.querySelectorAll(".tab"),
   views: document.querySelectorAll(".view"),
   pageTitle: document.querySelector("#pageTitle"),
@@ -79,6 +98,16 @@ const elements = {
   goalModal: document.querySelector("#goalModal"),
   goalForm: document.querySelector("#goalForm"),
   entryType: document.querySelector("#entryType"),
+  authScreen: document.querySelector("#authScreen"),
+  showLoginBtn: document.querySelector("#showLoginBtn"),
+  showRegisterBtn: document.querySelector("#showRegisterBtn"),
+  loginForm: document.querySelector("#loginForm"),
+  registerForm: document.querySelector("#registerForm"),
+  authMessage: document.querySelector("#authMessage"),
+  registerName: document.querySelector("#registerName"),
+  registerEmail: document.querySelector("#registerEmail"),
+  registerPassword: document.querySelector("#registerPassword"),
+  registerPasswordConfirm: document.querySelector("#registerPasswordConfirm"),
   entryCategory: document.querySelector("#entryCategory"),
   entryPaidBy: document.querySelector("#entryPaidBy"),
   entryPaidByLabel: document.querySelector("#entryPaidByLabel"),
@@ -96,20 +125,20 @@ const elements = {
   personBShare: document.querySelector("#personBShare"),
   splitHint: document.querySelector("#splitHint"),
   fixedList: document.querySelector("#fixedList"),
-fixedBillForm: document.querySelector("#fixedBillForm"),
-fixedName: document.querySelector("#fixedName"),
-fixedAmount: document.querySelector("#fixedAmount"),
-fixedDueDay: document.querySelector("#fixedDueDay"),
-fixedOrigin: document.querySelector("#fixedOrigin"),
-fixedEditModal: document.querySelector("#fixedEditModal"),
-fixedEditForm: document.querySelector("#fixedEditForm"),
-editFixedName: document.querySelector("#editFixedName"),
-editFixedAmount: document.querySelector("#editFixedAmount"),
-editFixedDueDay: document.querySelector("#editFixedDueDay"),
-editFixedPaidBy: document.querySelector("#editFixedPaidBy"),
-editFixedOrigin: document.querySelector("#editFixedOrigin"),
-secondPersonFields: document.querySelector("#secondPersonFields"),
-toggleSecondPersonBtn: document.querySelector("#toggleSecondPersonBtn"),
+  fixedBillForm: document.querySelector("#fixedBillForm"),
+  fixedName: document.querySelector("#fixedName"),
+  fixedAmount: document.querySelector("#fixedAmount"),
+  fixedDueDay: document.querySelector("#fixedDueDay"),
+  fixedOrigin: document.querySelector("#fixedOrigin"),
+  fixedEditModal: document.querySelector("#fixedEditModal"),
+  fixedEditForm: document.querySelector("#fixedEditForm"),
+  editFixedName: document.querySelector("#editFixedName"),
+  editFixedAmount: document.querySelector("#editFixedAmount"),
+  editFixedDueDay: document.querySelector("#editFixedDueDay"),
+  editFixedPaidBy: document.querySelector("#editFixedPaidBy"),
+  editFixedOrigin: document.querySelector("#editFixedOrigin"),
+  secondPersonFields: document.querySelector("#secondPersonFields"),
+  toggleSecondPersonBtn: document.querySelector("#toggleSecondPersonBtn"),
   exportBtn: document.querySelector("#exportBtn"),
 };
 
@@ -130,6 +159,25 @@ function loadState() {
 
 function saveState() {
   localStorage.setItem(storageKey, JSON.stringify(state));
+}
+function getUserInitials(name) {
+
+    if (!name) return "?";
+
+    const parts = name
+        .trim()
+        .split(" ")
+        .filter(Boolean);
+
+    if (parts.length === 1) {
+        return parts[0][0].toUpperCase();
+    }
+
+    return (
+        parts[0][0] +
+        parts[parts.length - 1][0]
+    ).toUpperCase();
+
 }
 
 function formatDate(dateValue) {
@@ -218,61 +266,61 @@ function renderDashboard() {
   const totals = getTotals(entries);
 
   const extraTotal = entries
-  .filter(
-    (entry) =>
-      entry.type === "income" &&
-      entry.category === "Extra"
-  )
-  .reduce((sum, entry) => sum + Number(entry.amount), 0);
+    .filter(
+      (entry) =>
+        entry.type === "income" &&
+        entry.category === "Extra"
+    )
+    .reduce((sum, entry) => sum + Number(entry.amount), 0);
 
-const totalFixed = (state.fixedBills || [])
-  .reduce(
-    (sum, bill) => sum + Number(bill.amount || 0),
-    0
-  );
+  const totalFixed = (state.fixedBills || [])
+    .reduce(
+      (sum, bill) => sum + Number(bill.amount || 0),
+      0
+    );
 
-const balance = totals.income - totals.expense;
-const availableAfterFixed = balance - totalFixed;
+  const balance = totals.income - totals.expense;
+  const availableAfterFixed = balance - totalFixed;
 
   const personASpending = entries
-  .filter(
-    (entry) =>
-      entry.type === "expense" &&
-      entry.paidBy === state.couple.personAName
-  )
-  .reduce((sum, entry) => sum + Number(entry.amount), 0);
+    .filter(
+      (entry) =>
+        entry.type === "expense" &&
+        entry.paidBy === state.couple.personAName
+    )
+    .reduce((sum, entry) => sum + Number(entry.amount), 0);
 
-const personBSpending = entries
-  .filter(
-    (entry) =>
-      entry.type === "expense" &&
-      entry.paidBy === state.couple.personBName
-  )
-  .reduce((sum, entry) => sum + Number(entry.amount), 0);
+  const personBSpending = entries
+    .filter(
+      (entry) =>
+        entry.type === "expense" &&
+        entry.paidBy === state.couple.personBName
+    )
+    .reduce((sum, entry) => sum + Number(entry.amount), 0);
 
-elements.personSpendList.innerHTML = `
-  <div class="person-spend-item">
-    <span>${escapeHtml(state.couple.personAName)}</span>
-    <strong>${money.format(personASpending)}</strong>
-  </div>
+  elements.personSpendList.innerHTML = `
+    <div class="person-spend-item">
+      <span>${escapeHtml(state.couple.personAName)}</span>
+      <strong>${money.format(personASpending)}</strong>
+    </div>
 
-  ${
-    state.couple.hasSecondPerson !== false
-      ? `
-        <div class="person-spend-item">
-          <span>${escapeHtml(state.couple.personBName)}</span>
-          <strong>${money.format(personBSpending)}</strong>
-        </div>
-      `
-      : ""
-  }
-`;
+    ${
+      state.couple.hasSecondPerson !== false
+        ? `
+          <div class="person-spend-item">
+            <span>${escapeHtml(state.couple.personBName)}</span>
+            <strong>${money.format(personBSpending)}</strong>
+          </div>
+        `
+        : ""
+    }
+  `;
 
-elements.incomeTotal.textContent = money.format(totals.income);
-elements.expenseTotal.textContent = money.format(totals.expense);
-elements.balanceTotal.textContent = money.format(balance);
-elements.extraTotal.textContent = money.format(extraTotal);
-elements.availableAfterFixed.textContent = money.format(availableAfterFixed);
+  elements.incomeTotal.textContent = money.format(totals.income);
+  elements.expenseTotal.textContent = money.format(totals.expense);
+  elements.balanceTotal.textContent = money.format(balance);
+  elements.extraTotal.textContent = money.format(extraTotal);
+  elements.availableAfterFixed.textContent = money.format(availableAfterFixed);
 
   const categoryTotals = entries
     .filter((entry) => entry.type === "expense")
@@ -298,13 +346,12 @@ elements.availableAfterFixed.textContent = money.format(availableAfterFixed);
         .join("")
     : `<div class="empty">Nenhum gasto neste mes.</div>`;
 
-
-elements.fixedSummary.innerHTML = `
-  <div class="fixed-total-card">
-    <span>Total de contas fixas</span>
-    <strong>${money.format(totalFixed)}</strong>
-  </div>
-`;
+  elements.fixedSummary.innerHTML = `
+    <div class="fixed-total-card">
+      <span>Total de contas fixas</span>
+      <strong>${money.format(totalFixed)}</strong>
+    </div>
+  `;
   elements.recentEntries.innerHTML = entries
     .slice()
     .sort((a, b) => b.date.localeCompare(a.date))
@@ -314,14 +361,14 @@ elements.fixedSummary.innerHTML = `
 }
 
 function renderEntries() {
- 
   const entries = state.entries
     .filter((entry) => activeFilter === "all" || entry.type === activeFilter)
     .sort((a, b) => b.date.localeCompare(a.date));
 
   elements.allEntries.innerHTML = entries.map(entryTemplate).join("") || `<div class="empty">Nada para mostrar.</div>`;
 }
- function renderFixedBills() {
+
+function renderFixedBills() {
   if (!state.fixedBills || state.fixedBills.length === 0) {
     elements.fixedList.innerHTML =
       '<div class="empty">Nenhuma conta fixa cadastrada.</div>';
@@ -333,11 +380,11 @@ function renderEntries() {
       (bill) => `
         <article class="entry-item">
           <div class="entry-title">
-            <strong>${bill.name}</strong>
+            <strong>${escapeHtml(bill.name)}</strong>
             <span>
               Vence dia ${bill.dueDay}
-              • ${bill.paidBy}
-              • ${bill.origin}
+              • ${escapeHtml(bill.paidBy)}
+              • ${escapeHtml(bill.origin)}
             </span>
           </div>
 
@@ -354,7 +401,7 @@ function renderEntries() {
             </button>
 
             <button
-          
+
             class="delete-button"
             data-delete-fixed="${bill.id}"
             type="button"
@@ -374,7 +421,7 @@ function entryTemplate(entry) {
     <article class="entry-item">
       <div class="entry-title">
         <strong>${escapeHtml(entry.description)}</strong>
-        <span>${entry.category} · ${entry.paidBy}</span>
+        <span>${escapeHtml(entry.category)} · ${escapeHtml(entry.paidBy)}</span>
       </div>
       <span class="entry-amount ${amountClass}">${amountPrefix} ${money.format(entry.amount)}</span>
       <button class="delete-button" data-delete-entry="${entry.id}" type="button" title="Excluir" aria-label="Excluir">×</button>
@@ -407,15 +454,15 @@ function renderSettings() {
   const shares = getShares();
   const hasSecondPerson = state.couple.hasSecondPerson !== false;
 
-elements.splitPanel.hidden = !hasSecondPerson;
+  elements.splitPanel.hidden = !hasSecondPerson;
 
-elements.secondPersonFields.style.display =
-  hasSecondPerson ? "grid" : "none";
+  elements.secondPersonFields.style.display =
+    hasSecondPerson ? "grid" : "none";
 
-elements.toggleSecondPersonBtn.textContent =
-  hasSecondPerson
-    ? "Remover segunda pessoa"
-    : "+ Adicionar segunda pessoa";
+  elements.toggleSecondPersonBtn.textContent =
+    hasSecondPerson
+      ? "Remover segunda pessoa"
+      : "+ Adicionar segunda pessoa";
   elements.personAName.value = state.couple.personAName;
   elements.personAIncome.value = state.couple.personAIncome;
   elements.personBName.value = state.couple.personBName;
@@ -428,23 +475,23 @@ elements.toggleSecondPersonBtn.textContent =
 
   const activePeople = [state.couple.personAName];
 
-if (state.couple.hasSecondPerson !== false) {
-  activePeople.push(state.couple.personBName);
-}
+  if (state.couple.hasSecondPerson !== false) {
+    activePeople.push(state.couple.personBName);
+  }
 
-elements.entryPaidBy.innerHTML = activePeople
-  .map(
-    (name) =>
-      `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
-  )
-  .join("");
-    
-    elements.fixedPaidBy.innerHTML = activePeople
-  .map(
-    (name) =>
-      `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
-  )
-  .join("");
+  elements.entryPaidBy.innerHTML = activePeople
+    .map(
+      (name) =>
+        `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
+    )
+    .join("");
+
+  elements.fixedPaidBy.innerHTML = activePeople
+    .map(
+      (name) =>
+        `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
+    )
+    .join("");
 }
 
 function updateCategoryOptions() {
@@ -484,6 +531,11 @@ document.addEventListener("click", (event) => {
   const deleteFixed = event.target.closest("[data-delete-fixed]");
   const editFixed = event.target.closest("[data-edit-fixed]");
 
+  // Fecha o dropdown de perfil se o clique foi fora dele
+  if (!event.target.closest(".profile-wrapper")) {
+    elements.profileDropdown.classList.add("hidden");
+  }
+
   if (tab) switchTab(tab.dataset.tab);
   if (shortcut) switchTab(shortcut.dataset.tabShortcut);
   if (event.target.closest("[data-open-entry]")) {
@@ -502,43 +554,43 @@ document.addEventListener("click", (event) => {
   }
 
   if (deleteFixed) {
-  state.fixedBills = state.fixedBills.filter(
-    (bill) => bill.id !== deleteFixed.dataset.deleteFixed
-  );
-  render();
-}
+    state.fixedBills = state.fixedBills.filter(
+      (bill) => bill.id !== deleteFixed.dataset.deleteFixed
+    );
+    render();
+  }
 
-if (editFixed) {
-  const bill = state.fixedBills.find(
-    (item) => item.id === editFixed.dataset.editFixed
-  );
+  if (editFixed) {
+    const bill = state.fixedBills.find(
+      (item) => item.id === editFixed.dataset.editFixed
+    );
 
-  if (!bill) return;
+    if (!bill) return;
 
-  editingFixedBillId = bill.id;
+    editingFixedBillId = bill.id;
 
-  elements.editFixedName.value = bill.name;
-  elements.editFixedAmount.value = bill.amount;
-  elements.editFixedDueDay.value = bill.dueDay;
+    elements.editFixedName.value = bill.name;
+    elements.editFixedAmount.value = bill.amount;
+    elements.editFixedDueDay.value = bill.dueDay;
 
- const activePeopleForEdit = [state.couple.personAName];
+    const activePeopleForEdit = [state.couple.personAName];
 
-if (state.couple.hasSecondPerson !== false) {
-  activePeopleForEdit.push(state.couple.personBName);
-}
+    if (state.couple.hasSecondPerson !== false) {
+      activePeopleForEdit.push(state.couple.personBName);
+    }
 
-elements.editFixedPaidBy.innerHTML = activePeopleForEdit
-  .map(
-    (name) =>
-      `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
-  )
-  .join("");
+    elements.editFixedPaidBy.innerHTML = activePeopleForEdit
+      .map(
+        (name) =>
+          `<option value="${escapeHtml(name)}">${escapeHtml(name)}</option>`
+      )
+      .join("");
 
-  elements.editFixedPaidBy.value = bill.paidBy;
-  elements.editFixedOrigin.value = bill.origin;
+    elements.editFixedPaidBy.value = bill.paidBy;
+    elements.editFixedOrigin.value = bill.origin;
 
-  elements.fixedEditModal.showModal();
-}
+    elements.fixedEditModal.showModal();
+  }
 });
 
 document.querySelectorAll(".segment").forEach((segment) => {
@@ -619,42 +671,84 @@ elements.exportBtn.addEventListener("click", () => {
   link.click();
   URL.revokeObjectURL(url);
 });
+
+elements.myAccountBtn.addEventListener("click", () => {
+
+    const user = JSON.parse(
+        localStorage.getItem("nossoCaixaUser")
+    );
+
+    if (!user) return;
+
+    elements.accountName.value = user.name;
+    elements.accountEmail.value = user.email;
+
+    elements.accountAvatar.textContent = getUserInitials(user.name);
+
+    elements.profileDropdown.classList.add("hidden");
+
+    elements.accountModal.showModal();
+
+});
+
+elements.accountForm.addEventListener("submit", (event) => {
+
+    event.preventDefault();
+
+    const user = JSON.parse(
+        localStorage.getItem("nossoCaixaUser")
+    );
+
+    if (!user) return;
+
+    user.name = elements.accountName.value.trim();
+    user.email = elements.accountEmail.value.trim();
+
+    localStorage.setItem(
+        "nossoCaixaUser",
+        JSON.stringify(user)
+    );
+
+    updateLoggedUser();
+
+    elements.accountAvatar.textContent = getUserInitials(user.name);
+
+    elements.accountModal.close();
+
+});
+
+
 elements.fixedBillForm.addEventListener("submit", (event) => {
   event.preventDefault();
 
   if (!state.fixedBills) {
     state.fixedBills = [];
   }
-const billData = {
-  name: elements.fixedName.value.trim(),
-  amount : Number(elements.fixedAmount.value),
-  dueDay : Number(elements.fixedDueDay.value),
-  paidBy : elements.fixedPaidBy.value,
-  origin : elements.fixedOrigin.value
-};
-  
-if (editingFixedBillId){
-   const bill = state.fixedBills.find(
-    (item) => item.id === editingFixedBillId
-   );
+  const billData = {
+    name: elements.fixedName.value.trim(),
+    amount: Number(elements.fixedAmount.value),
+    dueDay: Number(elements.fixedDueDay.value),
+    paidBy: elements.fixedPaidBy.value,
+    origin: elements.fixedOrigin.value
+  };
 
-   if(bill) {
-    Object.assign(bill, billData);
+  if (editingFixedBillId) {
+    const bill = state.fixedBills.find(
+      (item) => item.id === editingFixedBillId
+    );
 
-   }
+    if (bill) {
+      Object.assign(bill, billData);
+    }
 
-   editingFixedBillId = null;
-
- }
-else {
-  state.fixedBills.push({
-    id:crypto.randomUUID(),
-    ...billData
-  });
-}
+    editingFixedBillId = null;
+  } else {
+    state.fixedBills.push({
+      id: crypto.randomUUID(),
+      ...billData
+    });
+  }
   elements.fixedBillForm.reset();
-
-  console.log("Conta fixa adicionada:", state.fixedBills);
 
   render();
 });
@@ -682,7 +776,7 @@ elements.fixedEditForm.addEventListener("submit", (event) => {
   render();
 });
 
-  elements.toggleSecondPersonBtn.addEventListener("click", () => {
+elements.toggleSecondPersonBtn.addEventListener("click", () => {
   const hasSecondPerson = state.couple.hasSecondPerson !== false;
 
   state.couple.hasSecondPerson = !hasSecondPerson;
@@ -695,5 +789,145 @@ elements.fixedEditForm.addEventListener("submit", (event) => {
   render();
 });
 
+function updateLoggedUser() {
+  const savedUser = JSON.parse(
+    localStorage.getItem("nossoCaixaUser")
+  );
+
+  if (savedUser) {
+    elements.loggedUserName.textContent = `Olá, ${savedUser.name}`;
+    elements.profileDropdownName.textContent = savedUser.name;
+    elements.profileDropdownEmail.textContent = savedUser.email;
+  } else {
+    elements.loggedUserName.textContent = "";
+    elements.profileDropdownName.textContent = "";
+    elements.profileDropdownEmail.textContent = "";
+  }
+}
+
+// Abre/fecha o menu do perfil
+elements.profileButton.addEventListener("click", (event) => {
+  event.stopPropagation();
+  elements.profileDropdown.classList.toggle("hidden");
+});
+
+elements.showLoginBtn.addEventListener("click", () => {
+  elements.loginForm.classList.remove("hidden");
+  elements.registerForm.classList.add("hidden");
+
+  elements.showLoginBtn.classList.add("active");
+  elements.showRegisterBtn.classList.remove("active");
+
+  elements.authMessage.textContent = "";
+});
+
+elements.registerForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const name = elements.registerName.value.trim();
+  const email = elements.registerEmail.value.trim().toLowerCase();
+  const password = elements.registerPassword.value;
+  const passwordConfirm = elements.registerPasswordConfirm.value;
+
+  if (password !== passwordConfirm) {
+    elements.authMessage.textContent = "As senhas não são iguais.";
+    return;
+  }
+
+  if (password.length < 6) {
+    elements.authMessage.textContent =
+      "A senha precisa ter pelo menos 6 caracteres.";
+    return;
+  }
+
+  const user = {
+    name: name,
+    email: email
+  };
+
+  localStorage.setItem("nossoCaixaUser", JSON.stringify(user));
+  localStorage.setItem("nossoCaixaSession", "true");
+
+  elements.authScreen.style.display = "none";
+  elements.mainApp.classList.remove("app-hidden");
+
+  updateLoggedUser();
+});
+
+elements.showRegisterBtn.addEventListener("click", () => {
+  elements.registerForm.classList.remove("hidden");
+  elements.loginForm.classList.add("hidden");
+
+  elements.showRegisterBtn.classList.add("active");
+  elements.showLoginBtn.classList.remove("active");
+
+  elements.authMessage.textContent = "";
+});
+
+elements.logoutBtn.addEventListener("click", () => {
+  localStorage.removeItem("nossoCaixaSession");
+
+  elements.profileDropdown.classList.add("hidden");
+  elements.mainApp.classList.add("app-hidden");
+  elements.authScreen.style.display = "";
+
+  elements.loginForm.reset();
+  elements.registerForm.reset();
+
+  elements.loginForm.classList.remove("hidden");
+  elements.registerForm.classList.add("hidden");
+
+  elements.showLoginBtn.classList.add("active");
+  elements.showRegisterBtn.classList.remove("active");
+
+  elements.authMessage.textContent = "";
+});
+
+elements.loginForm.addEventListener("submit", (event) => {
+  event.preventDefault();
+
+  const email = elements.loginEmail.value.trim().toLowerCase();
+
+  const savedUser = JSON.parse(
+    localStorage.getItem("nossoCaixaUser")
+  );
+
+  if (!savedUser) {
+    elements.authMessage.textContent =
+      "Nenhuma conta cadastrada. Crie uma conta primeiro.";
+    return;
+  }
+
+  if (email !== savedUser.email) {
+    elements.authMessage.textContent =
+      "E-mail não encontrado.";
+    return;
+  }
+
+  localStorage.setItem("nossoCaixaSession", "true");
+
+  elements.authScreen.style.display = "none";
+  elements.mainApp.classList.remove("app-hidden");
+
+  elements.authMessage.textContent = "";
+
+  updateLoggedUser();
+});
+
+const hasActiveSession =
+  localStorage.getItem("nossoCaixaSession") === "true";
+
+const savedUser =
+  JSON.parse(localStorage.getItem("nossoCaixaUser"));
+
+if (hasActiveSession && savedUser) {
+  elements.authScreen.style.display = "none";
+  elements.mainApp.classList.remove("app-hidden");
+} else {
+  elements.authScreen.style.display = "";
+  elements.mainApp.classList.add("app-hidden");
+}
+
+updateLoggedUser();
 updateCategoryOptions();
 render();

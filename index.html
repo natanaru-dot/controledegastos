@@ -7,7 +7,7 @@
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
-    <div class="app-shell">
+    <div class="app-shell app-hidden" id="mainApp">
       <aside class="sidebar">
         <div class="brand">
           <div class="brand-mark">NC</div>
@@ -33,9 +33,65 @@
             <h2 id="pageTitle">Resumo</h2>
           </div>
           <div class="top-actions">
-            <button class="icon-button" id="exportBtn" type="button" title="Exportar dados" aria-label="Exportar dados">
+
+            <button class="icon-button"
+              id="exportBtn"
+              type="button"
+              title="Exportar dados"
+              aria-label="Exportar dados">
               <span aria-hidden="true">&darr;</span>
+
             </button>
+
+            <div class="profile-wrapper">
+
+  <button
+    class="profile-button"
+    id="profileButton"
+    type="button"
+  >
+    <span id="loggedUserName"></span>
+
+    <span class="profile-arrow">
+      ▼
+    </span>
+  </button>
+
+  <div class="profile-dropdown hidden" id="profileDropdown">
+
+    <div class="profile-dropdown-header">
+
+      <strong id="profileDropdownName"></strong>
+
+      <small id="profileDropdownEmail"></small>
+
+    </div>
+
+    <button type="button" id="myAccountBtn">
+      👤 Minha conta
+    </button>
+
+    <button type="button" id="customizationBtn">
+      🎨 Personalização
+    </button>
+
+    <button type="button" id="securityBtn">
+      🔒 Segurança
+    </button>
+
+    <button type="button" id="inviteBtn">
+      👥 Convites
+    </button>
+
+    <hr>
+
+    <button type="button" id="logoutMenuBtn">
+      🚪 Sair
+    </button>
+
+  </div>
+
+</div>
             <button class="primary-button" data-open-entry type="button">+ Lancamento</button>
           </div>
         </section>
@@ -173,32 +229,33 @@
               <label for="personAIncome">
                 Renda mensal 1
                 <input id="personAIncome" type="number" min="0" step="0.01" />
+              </label>
               <div id="secondPersonFields">
-  <label for="personBName">
-    Nome 2
-    <input id="personBName" type="text" autocomplete="off" />
-  </label>
+                <label for="personBName">
+                  Nome 2
+                  <input id="personBName" type="text" autocomplete="off" />
+                </label>
 
-  <label for="personBIncome">
-    Renda mensal 2
-    <input id="personBIncome" type="number" min="0" step="0.01" />
-  </label>
-</div>
+                <label for="personBIncome">
+                  Renda mensal 2
+                  <input id="personBIncome" type="number" min="0" step="0.01" />
+                </label>
+              </div>
 
-<button
-  class="ghost-button"
-  id="toggleSecondPersonBtn"
-  type="button"
->
-  Remover segunda pessoa
-</button>
+              <button
+                class="ghost-button"
+                id="toggleSecondPersonBtn"
+                type="button"
+              >
+                Remover segunda pessoa
+              </button>
               <button class="primary-button" type="submit">Salvar</button>
             </form>
 
             <section class="panel" id="splitPanel">
               <div class="panel-header">
                 <h3>Divisao proporcional</h3>
-              
+
               </div>
               <div class="split-card">
                 <div>
@@ -216,7 +273,6 @@
         </section>
       </main>
     </div>
-
     <dialog class="modal" id="entryModal">
       <form id="entryForm" method="dialog">
         <div class="modal-header">
@@ -242,18 +298,19 @@
           <label for="entryCategory">
             Categoria
             <select id="entryCategory"></select>
+          </label>
           <label for="entryPaidBy">
-  <span id="entryPaidByLabel">Quem pagou</span>
-  <select id="entryPaidBy"></select>
-</label>
+            <span id="entryPaidByLabel">Quem pagou</span>
+            <select id="entryPaidBy"></select>
+          </label>
 
-<label for="entryScope" id="entryScopeField">
-  Uso
-  <select id="entryScope">
-    <option value="individual">Individual</option>
-    <option value="shared">Do casal</option>
-  </select>
-</label>
+          <label for="entryScope" id="entryScopeField">
+            Uso
+            <select id="entryScope">
+              <option value="individual">Individual</option>
+              <option value="shared">Do casal</option>
+            </select>
+          </label>
           <label for="entryDate">
             Data
             <input id="entryDate" type="date" required />
@@ -377,6 +434,192 @@
     </div>
   </form>
 </dialog>
+
+<dialog class="modal" id="accountModal">
+
+    <form id="accountForm" method="dialog">
+
+        <div class="modal-header">
+
+            <h3>Minha Conta</h3>
+
+            <button
+                class="ghost-button"
+                data-close-modal
+                type="button">
+                Fechar
+            </button>
+
+        </div>
+
+        <div class="account-avatar">
+
+    <div id="accountAvatar" class="avatar-circle"></div>
+
+    <button
+        class="ghost-button"
+        type="button"
+        id="changeAvatarBtn">
+
+        Escolher foto
+
+    </button>
+
+</div>
+
+        <div class="form-grid">
+
+            <label>
+
+                Nome
+
+                <input
+                    id="accountName"
+                    type="text"
+                    required>
+
+            </label>
+
+            <label>
+
+                E-mail
+
+                <input
+                    id="accountEmail"
+                    type="email"
+                    required>
+
+            </label>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                type="submit">
+
+                Salvar alterações
+
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+<section class="auth-screen" id="authScreen">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <h1>Nosso Caixa</h1>
+      <p>Organize sua vida financeira em um só lugar.</p>
+    </div>
+
+    <div class="auth-tabs">
+      <button
+        class="auth-tab active"
+        id="showLoginBtn"
+        type="button"
+      >
+        Entrar
+      </button>
+
+      <button
+        class="auth-tab"
+        id="showRegisterBtn"
+        type="button"
+      >
+        Criar conta
+      </button>
+    </div>
+
+    <!-- LOGIN -->
+    <form class="auth-form" id="loginForm">
+      <label for="loginEmail">
+        E-mail
+        <input
+          id="loginEmail"
+          type="email"
+          placeholder="seu@email.com"
+          autocomplete="email"
+          required
+        />
+      </label>
+
+      <label for="loginPassword">
+        Senha
+        <input
+          id="loginPassword"
+          type="password"
+          placeholder="Digite sua senha"
+          autocomplete="current-password"
+          required
+        />
+      </label>
+
+      <button class="primary-button auth-submit" type="submit">
+        Entrar
+      </button>
+    </form>
+
+    <!-- CADASTRO -->
+    <form class="auth-form hidden" id="registerForm">
+      <label for="registerName">
+        Nome
+        <input
+          id="registerName"
+          type="text"
+          placeholder="Seu nome"
+          autocomplete="name"
+          required
+        />
+      </label>
+
+      <label for="registerEmail">
+        E-mail
+        <input
+          id="registerEmail"
+          type="email"
+          placeholder="seu@email.com"
+          autocomplete="email"
+          required
+        />
+      </label>
+
+      <label for="registerPassword">
+        Senha
+        <input
+          id="registerPassword"
+          type="password"
+          placeholder="Crie uma senha"
+          minlength="6"
+          autocomplete="new-password"
+          required
+        />
+      </label>
+
+      <label for="registerPasswordConfirm">
+        Confirmar senha
+        <input
+          id="registerPasswordConfirm"
+          type="password"
+          placeholder="Digite a senha novamente"
+          minlength="6"
+          autocomplete="new-password"
+          required
+        />
+      </label>
+
+      <button class="primary-button auth-submit" type="submit">
+        Criar minha conta
+      </button>
+    </form>
+
+    <p class="auth-message" id="authMessage"></p>
+  </div>
+</section>
+
   <script src="app.js"></script>
 
   </body>
