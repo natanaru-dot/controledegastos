@@ -13,7 +13,7 @@
           <div class="brand-mark">NC</div>
           <div>
             <h1>Nosso Caixa</h1>
-            <p>Financas do casal</p>
+            <p>Financas do Casal</p>
           </div>
         </div>
 
@@ -50,6 +50,10 @@
     id="profileButton"
     type="button"
   >
+  <div class="profile-avatar" id="profileAvatar">
+    ?
+</div>
+
     <span id="loggedUserName"></span>
 
     <span class="profile-arrow">
@@ -68,7 +72,7 @@
     </div>
 
     <button type="button" id="myAccountBtn">
-      👤 Minha conta
+      👤 Minha Conta
     </button>
 
     <button type="button" id="customizationBtn">
@@ -111,7 +115,7 @@
               <strong id="balanceTotal">R$ 0,00</strong>
             </article>
             <article class="metric available">
-              <span>Livre após fixas</span>
+              <span>Livre Após Fixas</span>
               <strong id="availableAfterFixed">R$ 0,00</strong>
             </article>
 
@@ -131,21 +135,21 @@
 
             <section class="panel">
               <div class="panel-header">
-                <h3>Gastos por pessoa</h3>
+                <h3>Gastos Por Pessoa</h3>
               </div>
               <div class="person-spend-list" id="personSpendList"></div>
             </section>
 
             <section class="panel">
               <div class="panel-header">
-                <h3>Contas fixas</h3>
+                <h3>Contas Fixas</h3>
               </div>
               <div class="fixed-summary" id="fixedSummary"></div>
             </section>
 
             <section class="panel">
               <div class="panel-header">
-                <h3>Ultimos lancamentos</h3>
+                <h3>Ultimos Lancamentos</h3>
                 <button class="ghost-button" data-tab-shortcut="entries" type="button">Ver todos</button>
               </div>
               <div class="entry-list compact" id="recentEntries"></div>
@@ -169,18 +173,18 @@
           <div class="fixed-grid">
             <form class="panel form-panel" id="fixedBillForm">
               <div class="panel-header">
-                <h3>Nova conta fixa</h3>
+                <h3>Nova Conta Fixa</h3>
               </div>
               <label for="fixedName">
                 Descricao
                 <input id="fixedName" type="text" required maxlength="60" placeholder="Aluguel, internet, academia..." />
               </label>
               <label for="fixedAmount">
-                Valor mensal
+                Valor Mensal
                 <input id="fixedAmount" type="number" min="0.01" step="0.01" required />
               </label>
               <label for="fixedDueDay">
-                Dia de vencimento
+                Dia De Vencimento
                 <input id="fixedDueDay" type="number" min="1" max="31" step="1" required />
               </label>
               <label for="fixedPaidBy">
@@ -190,18 +194,18 @@
               <label for="fixedOrigin">
                 Origem
                 <select id="fixedOrigin">
-                  <option value="Cartao de credito">Cartao de credito</option>
+                  <option value="Cartao de credito">Cartao De Credito</option>
                   <option value="Debito">Debito</option>
                   <option value="Pix">Pix</option>
-                  <option value="Dinheiro em especie">Dinheiro em especie</option>
+                  <option value="Dinheiro em especie">Dinheiro Em Especie</option>
                 </select>
               </label>
-              <button class="primary-button" type="submit">Adicionar conta</button>
+              <button class="primary-button" type="submit">Adicionar Conta</button>
             </form>
 
             <section class="panel">
               <div class="panel-header">
-                <h3>Contas cadastradas</h3>
+                <h3>Contas Cadastradas</h3>
               </div>
               <div class="fixed-list" id="fixedList"></div>
             </section>
@@ -210,7 +214,7 @@
 
         <section class="view" id="goalsView">
           <div class="toolbar">
-            <h3>Metas compartilhadas</h3>
+            <h3>Metas Compartilhadas</h3>
             <button class="primary-button" id="addGoalBtn" type="button">+ Meta</button>
           </div>
           <div class="goal-grid" id="goalGrid"></div>
@@ -220,14 +224,14 @@
           <div class="settings-grid">
             <form class="panel form-panel" id="coupleForm">
               <div class="panel-header">
-                <h3>Dados do casal</h3>
+                <h3>Dados do Casal</h3>
               </div>
               <label for="personAName">
                 Nome 1
                 <input id="personAName" type="text" autocomplete="off" />
               </label>
               <label for="personAIncome">
-                Renda mensal 1
+                Renda Mensal 1
                 <input id="personAIncome" type="number" min="0" step="0.01" />
               </label>
               <div id="secondPersonFields">
@@ -237,7 +241,7 @@
                 </label>
 
                 <label for="personBIncome">
-                  Renda mensal 2
+                  Renda Mensal 2
                   <input id="personBIncome" type="number" min="0" step="0.01" />
                 </label>
               </div>
@@ -247,14 +251,14 @@
                 id="toggleSecondPersonBtn"
                 type="button"
               >
-                Remover segunda pessoa
+                Remover Segunda Pessoa
               </button>
               <button class="primary-button" type="submit">Salvar</button>
             </form>
 
             <section class="panel" id="splitPanel">
               <div class="panel-header">
-                <h3>Divisao proporcional</h3>
+                <h3>Divisao Proporcional</h3>
 
               </div>
               <div class="split-card">
@@ -276,7 +280,7 @@
     <dialog class="modal" id="entryModal">
       <form id="entryForm" method="dialog">
         <div class="modal-header">
-          <h3>Novo lancamento</h3>
+          <h3>Novo Lancamento</h3>
           <button class="icon-button" value="cancel" type="button" data-close-modal title="Fechar" aria-label="Fechar">&times;</button>
         </div>
         <div class="form-grid">
@@ -308,7 +312,7 @@
             Uso
             <select id="entryScope">
               <option value="individual">Individual</option>
-              <option value="shared">Do casal</option>
+              <option value="shared">Do Casal</option>
             </select>
           </label>
           <label for="entryDate">
@@ -326,7 +330,7 @@
     <dialog class="modal" id="goalModal">
       <form id="goalForm" method="dialog">
         <div class="modal-header">
-          <h3 id="goalModalTitle">Nova meta</h3>
+          <h3 id="goalModalTitle">Nova Meta</h3>
           <button class="icon-button" value="cancel" type="button" data-close-modal title="Fechar" aria-label="Fechar">&times;</button>
         </div>
         <div class="form-grid">
@@ -335,7 +339,7 @@
             <input id="goalName" type="text" required maxlength="50" />
           </label>
           <label for="goalTarget">
-            Valor alvo
+            Valor Alvo
             <input id="goalTarget" type="number" min="1" step="0.01" required />
           </label>
           <label for="goalSaved">
@@ -389,7 +393,7 @@
       </label>
 
       <label for="editFixedDueDay">
-        Dia de vencimento
+        Dia De Vencimento
         <input
           id="editFixedDueDay"
           type="number"
@@ -408,10 +412,10 @@
       <label for="editFixedOrigin">
         Origem
         <select id="editFixedOrigin">
-          <option value="Cartao de credito">Cartão de crédito</option>
+          <option value="Cartao de credito">Cartão De Crédito</option>
           <option value="Debito">Débito</option>
           <option value="Pix">Pix</option>
-          <option value="Dinheiro em especie">Dinheiro em espécie</option>
+          <option value="Dinheiro em especie">Dinheiro Em Espécie</option>
         </select>
       </label>
     </div>
@@ -429,7 +433,7 @@
         class="primary-button"
         type="submit"
       >
-        Salvar alterações
+        Salvar Alterações
       </button>
     </div>
   </form>
@@ -454,16 +458,25 @@
 
         <div class="account-avatar">
 
-    <div id="accountAvatar" class="avatar-circle"></div>
+    <div
+    id="accountAvatar"
+    class="avatar-circle avatar-clickable"
+    title="Clique para alterar a foto"
+>
+    NO
 
-    <button
-        class="ghost-button"
-        type="button"
-        id="changeAvatarBtn">
+    <div class="avatar-overlay">
+        📷
+    </div>
 
-        Escolher foto
+</div>
 
-    </button>
+    <input
+        type="file"
+        id="avatarInput"
+        accept="image/*"
+        hidden
+    >
 
 </div>
 
@@ -490,6 +503,70 @@
                     required>
 
             </label>
+<button
+    type="button"
+    id="removeAvatarBtn"
+    class="ghost-button danger-button">
+
+    🗑️ Remover foto
+
+</button>
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                type="submit">
+
+                Salvar Alterações
+
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+<dialog class="modal" id="customizationModal">
+
+    <form id="customizationForm">
+
+        <div class="modal-header">
+
+            <h3>Personalização</h3>
+
+            <button
+                class="ghost-button"
+                type="button"
+                data-close-modal>
+
+                Fechar
+
+            </button>
+
+        </div>
+
+        <div class="form-grid">
+
+            <label>
+
+                Tema
+
+                <select id="themeSelect">
+
+                    <option value="light">
+                        ☀️ Claro
+                    </option>
+
+                    <option value="dark">
+                        🌙 Escuro
+                    </option>
+
+                </select>
+
+            </label>
 
         </div>
 
@@ -499,7 +576,7 @@
                 class="primary-button"
                 type="submit">
 
-                Salvar alterações
+                Salvar
 
             </button>
 
@@ -600,7 +677,7 @@
       </label>
 
       <label for="registerPasswordConfirm">
-        Confirmar senha
+        Confirmar Senha
         <input
           id="registerPasswordConfirm"
           type="password"
@@ -612,7 +689,7 @@
       </label>
 
       <button class="primary-button auth-submit" type="submit">
-        Criar minha conta
+        Criar Minha Conta
       </button>
     </form>
 

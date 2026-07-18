@@ -11,7 +11,7 @@ const defaultState = {
     personAName: "Natan",
     personAIncome: 2500,
     personBName: "Parceira",
-    personBIncome: 2500,
+    personBIncome: 2500, 
     hasSecondPerson: true,
   },
   entries: [
@@ -58,6 +58,13 @@ const money = new Intl.NumberFormat("pt-BR", {
 });
 
 const elements = {
+  customizationBtn:document.querySelector("#customizationBtn"),
+  customizationModal:document.querySelector("#customizationModal"),
+  customizationForm:document.querySelector("#customizationForm"),
+  themeSelect:document.querySelector("#themeSelect"),
+  removeAvatarBtn:document.querySelector("#removeAvatarBtn"),
+  profileAvatar: document.querySelector("#profileAvatar"),
+  avatarInput: document.querySelector("#avatarInput"),
   accountAvatar: document.querySelector("#accountAvatar"),
   myAccountBtn: document.querySelector("#myAccountBtn"),
   customizationBtn: document.querySelector("#customizationBtn"),
@@ -177,6 +184,44 @@ function getUserInitials(name) {
         parts[0][0] +
         parts[parts.length - 1][0]
     ).toUpperCase();
+
+}
+
+function getDisplayName(name) {
+
+    if (!name) return "";
+
+    const parts = name.trim().split(" ");
+
+    if (parts.length === 1) {
+        return parts[0];
+    }
+
+    return `${parts[0]} ${parts[parts.length - 1]}`;
+
+}
+
+function updateAccountAvatar(user) {
+
+    if (!user) return;
+
+    if (user.avatar) {
+
+        const avatarHTML = `
+            <img src="${user.avatar}" alt="Avatar">
+        `;
+
+        elements.accountAvatar.innerHTML = avatarHTML;
+        elements.profileAvatar.innerHTML = avatarHTML;
+
+        return;
+
+    }
+
+    const initials = getUserInitials(user.name);
+
+    elements.accountAvatar.textContent = initials;
+    elements.profileAvatar.textContent = initials;
 
 }
 
@@ -683,11 +728,121 @@ elements.myAccountBtn.addEventListener("click", () => {
     elements.accountName.value = user.name;
     elements.accountEmail.value = user.email;
 
-    elements.accountAvatar.textContent = getUserInitials(user.name);
+    updateAccountAvatar(user);
 
     elements.profileDropdown.classList.add("hidden");
 
     elements.accountModal.showModal();
+
+});
+
+elements.accountAvatar.addEventListener("click", () => {
+
+    elements.avatarInput.click();
+
+});
+
+elements.removeAvatarBtn.addEventListener("click", () => {
+
+    const user = JSON.parse(
+        localStorage.getItem("nossoCaixaUser")
+    );
+
+    if (!user || !user.avatar) return;
+
+    const confirmar = confirm(
+        "Deseja realmente remover sua foto de perfil?"
+    );
+
+    if (!confirmar) return;
+
+    delete user.avatar;
+
+    localStorage.setItem(
+        "nossoCaixaUser",
+        JSON.stringify(user)
+    );
+
+    updateAccountAvatar(user);
+
+});
+
+elements.customizationBtn.addEventListener("click", () => {
+
+    elements.profileDropdown.classList.add("hidden");
+
+    const savedTheme =
+        localStorage.getItem("nossoCaixaTheme") || "light";
+
+    elements.themeSelect.value = savedTheme;
+
+    elements.customizationModal.showModal();
+
+});
+
+elements.customizationForm.addEventListener("submit", (event) => {
+
+    event.preventDefault();
+
+    const theme = elements.themeSelect.value;
+
+    if (theme === "dark") {
+
+        document.body.classList.add("dark");
+
+    } else {
+
+        document.body.classList.remove("dark");
+
+    }
+
+    localStorage.setItem(
+        "nossoCaixaTheme",
+        theme
+    );
+
+    elements.customizationModal.close();
+
+});
+
+elements.avatarInput.addEventListener("change", (event) => {
+
+    const file = event.target.files[0];
+
+    if (!file) return;
+
+    const reader = new FileReader();
+
+   reader.onload = () => {
+
+    user.avatar = reader.result;
+
+    updateAccountAvatar(user);
+
+    const user = JSON.parse(
+        localStorage.getItem("nossoCaixaUser")
+    );
+
+    if (!user) return;
+
+    user.avatar = reader.result;
+
+    localStorage.setItem(
+        "nossoCaixaUser",
+        JSON.stringify(user)
+    );
+
+};
+
+    reader.readAsDataURL(file);
+
+});
+
+
+elements.accountName.addEventListener("input", () => {
+
+    elements.accountAvatar.textContent =
+        getUserInitials(elements.accountName.value);
 
 });
 
@@ -795,7 +950,8 @@ function updateLoggedUser() {
   );
 
   if (savedUser) {
-    elements.loggedUserName.textContent = `Olá, ${savedUser.name}`;
+    elements.loggedUserName.textContent =
+    `Olá, ${getDisplayName(savedUser.name)}`;
     elements.profileDropdownName.textContent = savedUser.name;
     elements.profileDropdownEmail.textContent = savedUser.email;
   } else {
@@ -926,6 +1082,14 @@ if (hasActiveSession && savedUser) {
 } else {
   elements.authScreen.style.display = "";
   elements.mainApp.classList.add("app-hidden");
+}
+const savedTheme =
+    localStorage.getItem("nossoCaixaTheme");
+
+if (savedTheme === "dark") {
+
+    document.body.classList.add("dark");
+
 }
 
 updateLoggedUser();

@@ -21,6 +21,24 @@
 
 }
 
+body.dark{
+
+    --bg:#111827;
+
+    --surface:#1f2937;
+
+    --surface-soft:#2d3748;
+
+    --ink:#f3f4f6;
+
+    --muted:#9ca3af;
+
+    --line:#374151;
+
+    --shadow:0 22px 60px rgba(0,0,0,.45);
+
+}
+
 * {
   box-sizing: border-box;
 }
@@ -725,6 +743,7 @@ select:focus {
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--surface);
+  color: var(--ink);
   cursor: pointer;
   transition: background 0.18s ease;
 }
@@ -733,8 +752,8 @@ select:focus {
   background: var(--surface-soft);
 }
 
-.profile-button span:first-child {
-  font-weight: 700;
+.profile-button #loggedUserName {
+    font-weight: 700;
 }
 
 .profile-arrow {
@@ -819,7 +838,35 @@ select:focus {
 
     user-select:none;
 
-    box-shadow: var(--shadow);
+    box-shadow:var(--shadow);
+
+    position:relative;
+
+    overflow:hidden;
+
+    cursor:pointer;
+
+    transition: transform .2s ease,
+                box-shadow .2s ease;
+
+}
+
+.avatar-circle:hover{
+
+    transform: scale(1.05);
+
+    box-shadow: 0 8px 20px rgba(0,0,0,.20);
+
+}
+
+.avatar-circle img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
 
 }
 
@@ -832,5 +879,93 @@ select:focus {
     margin:0 auto 24px;
 
     gap:14px;
+
+}
+.profile-avatar{
+
+    width:38px;
+    height:38px;
+
+    border-radius:50%;
+
+    background:var(--primary);
+
+    color:#fff;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    font-weight:700;
+
+    overflow:hidden;
+
+    flex-shrink:0;
+
+}
+.profile-avatar img{
+
+    width:100%;
+    height:100%;
+
+    object-fit:cover;
+
+    display:block;
+
+}
+.avatar-clickable{
+
+    position:relative;
+
+    cursor:pointer;
+
+}
+
+.avatar-overlay{
+
+    position:absolute;
+    top:0;
+    left:0;
+
+    width:100%;
+    height:100%;
+
+    display:flex;
+    align-items:center;
+    justify-content:center;
+
+    background:rgba(0,0,0,.6);
+
+    color:#fff;
+
+    font-size:26px;
+
+    opacity:0;
+
+    transition:opacity .2s;
+
+    border-radius:50%;
+
+    z-index:10;
+
+}
+
+.avatar-clickable:hover .avatar-overlay{
+
+    opacity:1;
+
+}
+
+.danger-button{
+
+    color:#000000;
+
+    margin-top:12px;
+
+}
+
+.danger-button:hover{
+
+    background:#fee2e2;
 
 }
