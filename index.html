@@ -4,6 +4,10 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Nosso Caixa</title>
+    <link
+    rel="stylesheet"
+    href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined"
+/>
     <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
@@ -304,17 +308,16 @@
             <select id="entryCategory"></select>
           </label>
           <label for="entryPaidBy">
-            <span id="entryPaidByLabel">Quem pagou</span>
-            <select id="entryPaidBy"></select>
-          </label>
-
-          <label for="entryScope" id="entryScopeField">
-            Uso
-            <select id="entryScope">
-              <option value="individual">Individual</option>
-              <option value="shared">Do Casal</option>
-            </select>
-          </label>
+    <span id="entryPaidByLabel">Quem pagou</span>
+    <select id="entryPaidBy"></select>
+</label>
+<label for="entryScope" id="entryScopeField">
+    Uso
+    <select id="entryScope">
+        <option value="individual">Individual</option>
+        <option value="shared">Do Casal</option>
+    </select>
+</label>
           <label for="entryDate">
             Data
             <input id="entryDate" type="date" required />
@@ -586,6 +589,205 @@
 
 </dialog>
 
+<dialog class="modal" id="securityModal">
+
+    <form id="securityForm">
+
+        <div class="modal-header">
+
+            <h3>🔒 Segurança</h3>
+
+            <button
+                class="ghost-button"
+                type="button"
+                data-close-modal>
+
+                Fechar
+
+            </button>
+
+        </div>
+
+        <div class="form-grid">
+
+            <label>
+
+    Senha Atual
+
+    <div class="password-field">
+
+        <input
+            id="currentPassword"
+            type="password"
+            required
+        >
+
+        <button
+    type="button"
+    class="toggle-password"
+    data-target="loginPassword">
+
+    <span class="material-symbols-outlined">
+        visibility
+    </span>
+
+</button>
+
+    </div>
+
+</label>
+
+            <label>
+
+    Nova Senha
+
+    <div class="password-field">
+
+        <input
+            id="newPassword"
+            type="password"
+            minlength="6"
+            required
+        >
+
+        <button
+            type="button"
+            class="toggle-password"
+            data-target="newPassword">
+<span class="material-symbols-outlined">
+        visibility
+    </span>
+
+</button>
+
+    </div>
+
+</label>
+
+            <label>
+
+    Confirmar Nova Senha
+
+    <div class="password-field">
+
+        <input
+            id="confirmNewPassword"
+            type="password"
+            minlength="6"
+            required
+        >
+
+        <button
+            type="button"
+            class="toggle-password"
+            data-target="confirmNewPassword">
+
+            <span class="material-symbols-outlined">
+        visibility
+    </span>
+
+</button>
+
+    </div>
+
+</label>
+
+        </div>
+
+        <div class="modal-actions">
+
+            <button
+                class="primary-button"
+                type="submit">
+
+                Alterar Senha
+
+            </button>
+
+        </div>
+
+    </form>
+
+</dialog>
+
+<dialog class="modal" id="inviteModal">
+
+    <div class="modal-header">
+
+        <h3>👥 Convites</h3>
+
+        <button
+            class="ghost-button"
+            type="button"
+            data-close-modal>
+
+            Fechar
+
+        </button>
+
+    </div>
+
+    <div class="invite-content">
+
+        <h4>Compartilhar seu caixa</h4>
+
+        <p class="muted">
+
+            Gere um código e envie para a outra pessoa.
+
+        </p>
+
+        <div class="invite-box">
+
+            <input
+                id="inviteCode"
+                type="text"
+                readonly
+                placeholder="Nenhum código gerado">
+
+            <button
+                id="generateInviteBtn"
+                class="primary-button"
+                type="button">
+
+                Gerar Código
+
+            </button>
+
+        </div>
+
+        <hr>
+
+        <h4>Entrar em um caixa</h4>
+
+        <p class="muted">
+
+            Digite um código recebido.
+
+        </p>
+
+        <div class="invite-box">
+
+            <input
+                id="joinInviteCode"
+                type="text"
+                placeholder="Ex.: NC-8X4P-21AB">
+
+            <button
+                id="joinInviteBtn"
+                class="primary-button"
+                type="button">
+
+                Entrar
+
+            </button>
+
+        </div>
+
+    </div>
+
+</dialog>
+
 <section class="auth-screen" id="authScreen">
   <div class="auth-card">
     <div class="auth-logo">
@@ -625,15 +827,33 @@
       </label>
 
       <label for="loginPassword">
-        Senha
+
+    Senha
+
+    <div class="password-field">
+
         <input
-          id="loginPassword"
-          type="password"
-          placeholder="Digite sua senha"
-          autocomplete="current-password"
-          required
+            id="loginPassword"
+            type="password"
+            placeholder="Digite sua senha"
+            autocomplete="current-password"
+            required
         />
-      </label>
+
+        <button
+            type="button"
+            class="toggle-password"
+            data-target="loginPassword">
+
+            <span class="material-symbols-outlined">
+        visibility
+    </span>
+
+</button>
+
+    </div>
+
+</label>
 
       <button class="primary-button auth-submit" type="submit">
         Entrar
@@ -665,28 +885,61 @@
       </label>
 
       <label for="registerPassword">
-        Senha
-        <input
-          id="registerPassword"
-          type="password"
-          placeholder="Crie uma senha"
-          minlength="6"
-          autocomplete="new-password"
-          required
-        />
-      </label>
 
-      <label for="registerPasswordConfirm">
-        Confirmar Senha
+    Senha
+
+    <div class="password-field">
+
         <input
-          id="registerPasswordConfirm"
-          type="password"
-          placeholder="Digite a senha novamente"
-          minlength="6"
-          autocomplete="new-password"
-          required
+            id="registerPassword"
+            type="password"
+            placeholder="Crie uma senha"
+            minlength="6"
+            autocomplete="new-password"
+            required
         />
-      </label>
+
+        <button
+            type="button"
+            class="toggle-password"
+            data-target="registerPassword">
+
+            <span class="material-symbols-outlined">
+        visibility
+    </span>
+
+</button>
+
+    </div>
+
+<label for="registerPasswordConfirm">
+
+    Confirmar Senha
+
+    <div class="password-field">
+
+        <input
+            id="registerPasswordConfirm"
+            type="password"
+            placeholder="Digite a senha novamente"
+            minlength="6"
+            autocomplete="new-password"
+            required
+        />
+
+        <button
+            type="button"
+            class="toggle-password"
+            data-target="registerPasswordConfirm">
+
+            <span class="material-symbols-outlined">
+        visibility
+    </span>
+
+</button>
+    </div>
+
+</label>
 
       <button class="primary-button auth-submit" type="submit">
         Criar Minha Conta
@@ -696,8 +949,9 @@
     <p class="auth-message" id="authMessage"></p>
   </div>
 </section>
+<div id="notificationContainer"></div>
 
-  <script src="app.js"></script>
+<script type="module" src="app.js"></script>
 
   </body>
 </html>

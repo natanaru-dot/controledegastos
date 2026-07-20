@@ -969,3 +969,157 @@ select:focus {
     background:#fee2e2;
 
 }
+body.dark .modal{
+    background: var(--surface);
+    color: var(--ink);
+}
+
+body.dark .modal h3{
+    color: var(--ink);
+}
+body.dark input,
+body.dark select,
+body.dark textarea{
+    background: var(--surface-soft);
+    color: var(--ink);
+    border: 1px solid var(--line);
+}
+body.dark input::placeholder,
+body.dark textarea::placeholder{
+    color: var(--muted);
+}
+body.dark .modal{
+    background: var(--surface);
+    color: var(--ink);
+}
+
+body.dark .modal h3{
+    color: var(--ink);
+}
+body.dark .primary-button{
+    background: var(--green);
+    color: #fff;
+}
+
+body.dark .primary-button:hover{
+    filter: brightness(1.08);
+}
+body.dark .delete-button,
+body.dark .edit-button{
+    background: var(--surface-soft);
+    border-color: var(--line);
+}
+
+body.dark .delete-button{
+    color: var(--red);
+}
+
+body.dark .edit-button{
+    color: var(--blue);
+}
+
+body.dark .delete-button:hover,
+body.dark .edit-button:hover{
+    background: var(--surface);
+}
+#entryScopeField{
+    display: none;
+}
+#notificationContainer {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+
+    z-index: 9999;
+
+    pointer-events: none;
+}
+
+.notification {
+    min-width: 280px;
+    max-width: 360px;
+
+    padding: 16px 18px;
+
+    border-radius: 12px;
+
+    color: white;
+
+    font-weight: 600;
+
+    box-shadow: 0 12px 30px rgba(0,0,0,.25);
+
+    opacity: 0;
+
+    transform: translateX(40px);
+
+    transition: .35s;
+}
+
+.notification.show {
+    opacity: 1;
+    transform: translateX(0);
+}
+
+.notification.success {
+    background: #22c55e;
+}
+
+.notification.error {
+    background: #ef4444;
+}
+
+.notification.info {
+    background: #3b82f6;
+}
+.password-field {
+
+    position: relative;
+
+    display: flex;
+
+    align-items: center;
+
+}
+
+.password-field input {
+
+    width: 100%;
+
+    padding-right: 45px;
+
+}
+
+.toggle-password {
+
+    position: absolute;
+
+    right: 12px;
+
+    top: 50%;
+
+    transform: translateY(-50%);
+
+    border: none;
+
+    background: transparent;
+
+    cursor: pointer;
+
+    font-size: 18px;
+
+    color: var(--text-secondary);
+
+    padding: 0;
+
+}
+
+.toggle-password:hover {
+
+    color: var(--primary);
+
+}

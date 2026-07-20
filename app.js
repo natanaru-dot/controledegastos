@@ -1,3 +1,21 @@
+import {
+
+    registerUser,
+
+    loginUser,
+
+    logoutUser,
+
+    onAuthStateChanged,
+
+    auth
+
+} from "./auth.js";
+
+import { db } from "./firebase.js";
+
+import { loadUserProfile } from "./firestore.js";
+
 const storageKey = "nosso-caixa-state-v1";
 
 const categories = {
@@ -58,6 +76,13 @@ const money = new Intl.NumberFormat("pt-BR", {
 });
 
 const elements = {
+  inviteBtn:document.querySelector("#inviteBtn"),
+  inviteModal:document.querySelector("#inviteModal"),
+  generateInviteBtn:document.querySelector("#generateInviteBtn"),
+  inviteCode:document.querySelector("#inviteCode"),
+  joinInviteBtn:document.querySelector("#joinInviteBtn"),
+  joinInviteCode:document.querySelector("#joinInviteCode"),
+  entryScope: document.querySelector("#entryScope"),
   customizationBtn:document.querySelector("#customizationBtn"),
   customizationModal:document.querySelector("#customizationModal"),
   customizationForm:document.querySelector("#customizationForm"),
@@ -69,6 +94,11 @@ const elements = {
   myAccountBtn: document.querySelector("#myAccountBtn"),
   customizationBtn: document.querySelector("#customizationBtn"),
   securityBtn: document.querySelector("#securityBtn"),
+  securityModal: document.querySelector("#securityModal"),
+  securityForm: document.querySelector("#securityForm"),
+  currentPassword: document.querySelector("#currentPassword"),
+  newPassword: document.querySelector("#newPassword"),
+confirmNewPassword: document.querySelector("#confirmNewPassword"),
   inviteBtn: document.querySelector("#inviteBtn"),
   accountModal: document.querySelector("#accountModal"),
   accountForm: document.querySelector("#accountForm"),
@@ -111,6 +141,7 @@ const elements = {
   loginForm: document.querySelector("#loginForm"),
   registerForm: document.querySelector("#registerForm"),
   authMessage: document.querySelector("#authMessage"),
+  notificationContainer: document.querySelector("#notificationContainer"),
   registerName: document.querySelector("#registerName"),
   registerEmail: document.querySelector("#registerEmail"),
   registerPassword: document.querySelector("#registerPassword"),
@@ -184,6 +215,74 @@ function getUserInitials(name) {
         parts[0][0] +
         parts[parts.length - 1][0]
     ).toUpperCase();
+
+}
+function showNotification(message, type = "info") {
+  
+
+    const container = elements.notificationContainer;
+
+    const notification = document.createElement("div");
+
+    notification.className = `notification ${type}`;
+
+    notification.textContent = message;
+
+    container.appendChild(notification);
+
+    requestAnimationFrame(() => {
+
+        notification.classList.add("show");
+
+    });
+
+    setTimeout(() => {
+
+        notification.classList.remove("show");
+
+        setTimeout(() => {
+
+            notification.remove();
+
+        }, 350);
+
+    }, 3000);
+
+}
+function setupPasswordToggle() {
+
+    const buttons = document.querySelectorAll(".toggle-password");
+
+    buttons.forEach((button) => {
+
+        button.addEventListener("click", () => {
+
+            const input = document.getElementById(
+                button.dataset.target
+            );
+
+            if (!input) return;
+
+            const showingPassword =
+                input.type === "text";
+
+            input.type = showingPassword
+                ? "password"
+                : "text";
+
+            const icon = button.querySelector(".material-symbols-outlined");
+
+if (icon) {
+
+    icon.textContent = showingPassword
+        ? "visibility"
+        : "visibility_off";
+
+}
+
+        });
+
+    });
 
 }
 
@@ -541,6 +640,7 @@ function renderSettings() {
 
 function updateCategoryOptions() {
   const type = elements.entryType.value;
+  const isCouple = state.couple.hasSecondPerson !== false;
 
   elements.entryCategory.innerHTML = categories[type]
     .map((category) => `<option value="${category}">${category}</option>`)
@@ -548,11 +648,14 @@ function updateCategoryOptions() {
 
   if (type === "income") {
     elements.entryPaidByLabel.textContent = "Quem recebeu";
-    elements.entryScopeField.style.display = "none";
   } else {
     elements.entryPaidByLabel.textContent = "Quem pagou";
-    elements.entryScopeField.style.display = "";
   }
+
+  elements.entryPaidBy.parentElement.style.display =
+    isCouple ? "" : "none";
+
+  elements.entryScopeField.style.display = "none";
 }
 
 function switchTab(tabName) {
@@ -571,6 +674,15 @@ function escapeHtml(value) {
 document.addEventListener("click", (event) => {
   const tab = event.target.closest("[data-tab]");
   const shortcut = event.target.closest("[data-tab-shortcut]");
+  if (tab) {
+  switchTab(tab.dataset.tab);
+  return;
+}
+
+if (shortcut) {
+  switchTab(shortcut.dataset.tabShortcut);
+  return;
+}
   const deleteEntry = event.target.closest("[data-delete-entry]");
   const deleteGoal = event.target.closest("[data-delete-goal]");
   const deleteFixed = event.target.closest("[data-delete-fixed]");
@@ -580,12 +692,10 @@ document.addEventListener("click", (event) => {
   if (!event.target.closest(".profile-wrapper")) {
     elements.profileDropdown.classList.add("hidden");
   }
-
-  if (tab) switchTab(tab.dataset.tab);
-  if (shortcut) switchTab(shortcut.dataset.tabShortcut);
-  if (event.target.closest("[data-open-entry]")) {
+    if (event.target.closest("[data-open-entry]")) {
     elements.entryDate.value = today();
     updateCategoryOptions();
+    elements.entryScope.value = "individual";
     elements.entryModal.showModal();
   }
   if (event.target.closest("[data-close-modal]")) event.target.closest("dialog").close();
@@ -657,9 +767,11 @@ elements.entryForm.addEventListener("submit", (event) => {
     type: elements.entryType.value,
     category: elements.entryCategory.value,
     paidBy: elements.entryPaidBy.value,
+    scope: elements.entryScope.value,
     date: elements.entryDate.value,
   });
   elements.entryForm.reset();
+  elements.entryScope.value = "individual";
   elements.entryModal.close();
   render();
 });
@@ -736,6 +848,12 @@ elements.myAccountBtn.addEventListener("click", () => {
 
 });
 
+elements.inviteBtn.addEventListener("click", () => {
+
+    elements.inviteModal.showModal();
+
+});
+
 elements.accountAvatar.addEventListener("click", () => {
 
     elements.avatarInput.click();
@@ -780,6 +898,16 @@ elements.customizationBtn.addEventListener("click", () => {
 
 });
 
+elements.securityBtn.addEventListener("click", () => {
+
+    elements.profileDropdown.classList.add("hidden");
+
+    elements.securityForm.reset();
+
+    elements.securityModal.showModal();
+
+});
+
 elements.customizationForm.addEventListener("submit", (event) => {
 
     event.preventDefault();
@@ -815,10 +943,6 @@ elements.avatarInput.addEventListener("change", (event) => {
 
    reader.onload = () => {
 
-    user.avatar = reader.result;
-
-    updateAccountAvatar(user);
-
     const user = JSON.parse(
         localStorage.getItem("nossoCaixaUser")
     );
@@ -831,6 +955,8 @@ elements.avatarInput.addEventListener("change", (event) => {
         "nossoCaixaUser",
         JSON.stringify(user)
     );
+
+    updateAccountAvatar(user);
 
 };
 
@@ -846,7 +972,7 @@ elements.accountName.addEventListener("input", () => {
 
 });
 
-elements.accountForm.addEventListener("submit", (event) => {
+elements.accountForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
@@ -864,7 +990,7 @@ elements.accountForm.addEventListener("submit", (event) => {
         JSON.stringify(user)
     );
 
-    updateLoggedUser();
+    await updateLoggedUser();
 
     elements.accountAvatar.textContent = getUserInitials(user.name);
 
@@ -944,22 +1070,69 @@ elements.toggleSecondPersonBtn.addEventListener("click", () => {
   render();
 });
 
-function updateLoggedUser() {
-  const savedUser = JSON.parse(
-    localStorage.getItem("nossoCaixaUser")
-  );
+function generateInviteCode() {
 
-  if (savedUser) {
-    elements.loggedUserName.textContent =
-    `Olá, ${getDisplayName(savedUser.name)}`;
-    elements.profileDropdownName.textContent = savedUser.name;
-    elements.profileDropdownEmail.textContent = savedUser.email;
-  } else {
-    elements.loggedUserName.textContent = "";
-    elements.profileDropdownName.textContent = "";
-    elements.profileDropdownEmail.textContent = "";
-  }
+    const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+
+    let code = "NC-";
+
+    for (let i = 0; i < 4; i++) {
+        code += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    code += "-";
+
+    for (let i = 0; i < 4; i++) {
+        code += chars[Math.floor(Math.random() * chars.length)];
+    }
+
+    return code;
+
 }
+
+async function updateLoggedUser() {
+
+    if (!auth.currentUser) {
+
+        elements.loggedUserName.textContent = "";
+        elements.profileDropdownName.textContent = "";
+        elements.profileDropdownEmail.textContent = "";
+
+        return;
+
+    }
+
+    const user = await loadUserProfile(
+        auth.currentUser.uid
+    );
+
+    if (!user) return;
+
+    elements.loggedUserName.textContent =
+        `Olá, ${getDisplayName(user.name)}!`;
+
+    elements.profileDropdownName.textContent =
+        user.name;
+
+    elements.profileDropdownEmail.textContent =
+        user.email;
+
+    updateAccountAvatar(user);
+
+}
+
+elements.generateInviteBtn.addEventListener("click", () => {
+
+    const code = generateInviteCode();
+
+    elements.inviteCode.value = code;
+
+    showNotification(
+        "Código de convite gerado.",
+        "success"
+    );
+
+});
 
 // Abre/fecha o menu do perfil
 elements.profileButton.addEventListener("click", (event) => {
@@ -977,7 +1150,7 @@ elements.showLoginBtn.addEventListener("click", () => {
   elements.authMessage.textContent = "";
 });
 
-elements.registerForm.addEventListener("submit", (event) => {
+elements.registerForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const name = elements.registerName.value.trim();
@@ -996,18 +1169,31 @@ elements.registerForm.addEventListener("submit", (event) => {
     return;
   }
 
-  const user = {
-    name: name,
-    email: email
-  };
+  try {
 
-  localStorage.setItem("nossoCaixaUser", JSON.stringify(user));
-  localStorage.setItem("nossoCaixaSession", "true");
+    const user = await registerUser(
+        name,
+        email,
+        password
+    );
+
+    localStorage.setItem("nossoCaixaSession", "true");
+
+} catch (error) {
+
+    console.error(error);
+
+    elements.authMessage.textContent =
+        "Não foi possível criar a conta.";
+
+    return;
+
+}
 
   elements.authScreen.style.display = "none";
   elements.mainApp.classList.remove("app-hidden");
 
-  updateLoggedUser();
+  await updateLoggedUser();
 });
 
 elements.showRegisterBtn.addEventListener("click", () => {
@@ -1039,26 +1225,30 @@ elements.logoutBtn.addEventListener("click", () => {
   elements.authMessage.textContent = "";
 });
 
-elements.loginForm.addEventListener("submit", (event) => {
+elements.loginForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
   const email = elements.loginEmail.value.trim().toLowerCase();
+  const password = elements.loginPassword.value;
 
-  const savedUser = JSON.parse(
-    localStorage.getItem("nossoCaixaUser")
-  );
+  try {
 
-  if (!savedUser) {
+    await loginUser(
+        email,
+        password
+    );
+
+} catch (error) {
+
+    console.error(error);
+
     elements.authMessage.textContent =
-      "Nenhuma conta cadastrada. Crie uma conta primeiro.";
-    return;
-  }
+        "E-mail ou senha incorretos.";
 
-  if (email !== savedUser.email) {
-    elements.authMessage.textContent =
-      "E-mail não encontrado.";
     return;
-  }
+
+}
+
 
   localStorage.setItem("nossoCaixaSession", "true");
 
@@ -1067,7 +1257,65 @@ elements.loginForm.addEventListener("submit", (event) => {
 
   elements.authMessage.textContent = "";
 
-  updateLoggedUser();
+  await updateLoggedUser();
+});
+elements.securityForm.addEventListener("submit", (event) => {
+
+    event.preventDefault();
+
+    const user = JSON.parse(
+        localStorage.getItem("nossoCaixaUser")
+    );
+
+    if (!user) return;
+
+    if (
+        elements.currentPassword.value !== user.password
+    ) {
+        showNotification(
+    "Senha atual incorreta.",
+    "error"
+);
+        return;
+    }
+
+    if (
+        elements.newPassword.value.length < 6
+    ) {
+        showNotification(
+    "A nova senha deve ter pelo menos 6 caracteres.",
+    "error"
+);
+        return;
+    }
+
+    if (
+        elements.newPassword.value !==
+        elements.confirmNewPassword.value
+    ) {
+        showNotification(
+    "As senhas não coincidem.",
+    "error"
+);
+        return;
+    }
+
+    user.password = elements.newPassword.value;
+
+    localStorage.setItem(
+        "nossoCaixaUser",
+        JSON.stringify(user)
+    );
+
+    showNotification(
+    "Senha alterada com sucesso!",
+    "success"
+);
+
+    elements.securityForm.reset();
+
+    elements.securityModal.close();
+
 });
 
 const hasActiveSession =
@@ -1092,6 +1340,7 @@ if (savedTheme === "dark") {
 
 }
 
-updateLoggedUser();
+setupPasswordToggle();
+await updateLoggedUser();
 updateCategoryOptions();
 render();
