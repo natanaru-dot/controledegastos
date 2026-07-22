@@ -14,6 +14,16 @@ import {
 
 import { saveUserProfile } from "./firestore.js";
 
+import {
+
+    EmailAuthProvider,
+
+    reauthenticateWithCredential,
+
+    updatePassword
+
+} from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+
 export async function registerUser(
     name,
     email,
@@ -55,6 +65,32 @@ export async function loginUser(
 export async function logoutUser() {
 
     await signOut(auth);
+
+}
+export async function changePassword(
+    currentPassword,
+    newPassword
+) {
+
+    if (!auth.currentUser) {
+        throw new Error("Usuário não autenticado.");
+    }
+
+    const credential =
+        EmailAuthProvider.credential(
+            auth.currentUser.email,
+            currentPassword
+        );
+
+    await reauthenticateWithCredential(
+        auth.currentUser,
+        credential
+    );
+
+    await updatePassword(
+        auth.currentUser,
+        newPassword
+    );
 
 }
 

@@ -1,20 +1,18 @@
 import {
-
     registerUser,
-
     loginUser,
-
     logoutUser,
-
-    onAuthStateChanged,
-
-    auth
-
+    changePassword,
+    auth,
+    onAuthStateChanged
 } from "./auth.js";
 
 import { db } from "./firebase.js";
 
-import { loadUserProfile } from "./firestore.js";
+import {
+    loadUserProfile,
+    updateUserProfile
+} from "./firestore.js";
 
 const storageKey = "nosso-caixa-state-v1";
 
@@ -829,10 +827,12 @@ elements.exportBtn.addEventListener("click", () => {
   URL.revokeObjectURL(url);
 });
 
-elements.myAccountBtn.addEventListener("click", () => {
+elements.myAccountBtn.addEventListener("click", async () => {
 
-    const user = JSON.parse(
-        localStorage.getItem("nossoCaixaUser")
+    if (!auth.currentUser) return;
+
+    const user = await loadUserProfile(
+        auth.currentUser.uid
     );
 
     if (!user) return;
@@ -860,10 +860,12 @@ elements.accountAvatar.addEventListener("click", () => {
 
 });
 
-elements.removeAvatarBtn.addEventListener("click", () => {
+elements.removeAvatarBtn.addEventListener("click", async () => {
 
-    const user = JSON.parse(
-        localStorage.getItem("nossoCaixaUser")
+    if (!auth.currentUser) return;
+
+    const user = await loadUserProfile(
+        auth.currentUser.uid
     );
 
     if (!user || !user.avatar) return;
@@ -874,14 +876,14 @@ elements.removeAvatarBtn.addEventListener("click", () => {
 
     if (!confirmar) return;
 
-    delete user.avatar;
-
-    localStorage.setItem(
-        "nossoCaixaUser",
-        JSON.stringify(user)
+    await updateUserProfile(
+        auth.currentUser.uid,
+        {
+            avatar: null
+        }
     );
 
-    updateAccountAvatar(user);
+    await updateLoggedUser();
 
 });
 
@@ -941,24 +943,20 @@ elements.avatarInput.addEventListener("change", (event) => {
 
     const reader = new FileReader();
 
-   reader.onload = () => {
+    reader.onload = async () => {
 
-    const user = JSON.parse(
-        localStorage.getItem("nossoCaixaUser")
-    );
+        if (!auth.currentUser) return;
 
-    if (!user) return;
+        await updateUserProfile(
+            auth.currentUser.uid,
+            {
+                avatar: reader.result
+            }
+        );
 
-    user.avatar = reader.result;
+        await updateLoggedUser();
 
-    localStorage.setItem(
-        "nossoCaixaUser",
-        JSON.stringify(user)
-    );
-
-    updateAccountAvatar(user);
-
-};
+    };
 
     reader.readAsDataURL(file);
 
@@ -976,23 +974,16 @@ elements.accountForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    const user = JSON.parse(
-        localStorage.getItem("nossoCaixaUser")
-    );
+    if (!auth.currentUser) return;
 
-    if (!user) return;
-
-    user.name = elements.accountName.value.trim();
-    user.email = elements.accountEmail.value.trim();
-
-    localStorage.setItem(
-        "nossoCaixaUser",
-        JSON.stringify(user)
+    await updateUserProfile(
+        auth.currentUser.uid,
+        {
+            name: elements.accountName.value.trim()
+        }
     );
 
     await updateLoggedUser();
-
-    elements.accountAvatar.textContent = getUserInitials(user.name);
 
     elements.accountModal.close();
 
@@ -1177,7 +1168,7 @@ elements.registerForm.addEventListener("submit", async (event) => {
         password
     );
 
-    localStorage.setItem("nossoCaixaSession", "true");
+  
 
 } catch (error) {
 
@@ -1206,9 +1197,10 @@ elements.showRegisterBtn.addEventListener("click", () => {
   elements.authMessage.textContent = "";
 });
 
-elements.logoutBtn.addEventListener("click", () => {
-  localStorage.removeItem("nossoCaixaSession");
+elements.logoutBtn.addEventListener("click", async () => {
 
+    await logoutUser();
+  
   elements.profileDropdown.classList.add("hidden");
   elements.mainApp.classList.add("app-hidden");
   elements.authScreen.style.display = "";
@@ -1250,7 +1242,7 @@ elements.loginForm.addEventListener("submit", async (event) => {
 }
 
 
-  localStorage.setItem("nossoCaixaSession", "true");
+  
 
   elements.authScreen.style.display = "none";
   elements.mainApp.classList.remove("app-hidden");
@@ -1259,33 +1251,15 @@ elements.loginForm.addEventListener("submit", async (event) => {
 
   await updateLoggedUser();
 });
-elements.securityForm.addEventListener("submit", (event) => {
+elements.securityForm.addEventListener("submit", async (event) => {
 
     event.preventDefault();
 
-    const user = JSON.parse(
-        localStorage.getItem("nossoCaixaUser")
-    );
-
-    if (!user) return;
-
-    if (
-        elements.currentPassword.value !== user.password
-    ) {
+    if (elements.newPassword.value.length < 6) {
         showNotification(
-    "Senha atual incorreta.",
-    "error"
-);
-        return;
-    }
-
-    if (
-        elements.newPassword.value.length < 6
-    ) {
-        showNotification(
-    "A nova senha deve ter pelo menos 6 caracteres.",
-    "error"
-);
+            "A nova senha deve ter pelo menos 6 caracteres.",
+            "error"
+        );
         return;
     }
 
@@ -1294,43 +1268,68 @@ elements.securityForm.addEventListener("submit", (event) => {
         elements.confirmNewPassword.value
     ) {
         showNotification(
-    "As senhas não coincidem.",
-    "error"
-);
+            "As senhas não coincidem.",
+            "error"
+        );
         return;
     }
 
-    user.password = elements.newPassword.value;
+    try {
 
-    localStorage.setItem(
-        "nossoCaixaUser",
-        JSON.stringify(user)
-    );
+        await changePassword(
+            elements.currentPassword.value,
+            elements.newPassword.value
+        );
 
-    showNotification(
-    "Senha alterada com sucesso!",
-    "success"
-);
+        showNotification(
+            "Senha alterada com sucesso!",
+            "success"
+        );
 
-    elements.securityForm.reset();
+        elements.securityForm.reset();
+        elements.securityModal.close();
 
-    elements.securityModal.close();
+    } catch (error) {
+
+        if (error.code === "auth/invalid-credential") {
+
+            showNotification(
+                "Senha atual incorreta.",
+                "error"
+            );
+
+        } else {
+
+            console.error(error);
+
+            showNotification(
+                "Erro ao alterar a senha.",
+                "error"
+            );
+
+        }
+
+    }
 
 });
 
-const hasActiveSession =
-  localStorage.getItem("nossoCaixaSession") === "true";
+onAuthStateChanged(auth, async (user) => {
 
-const savedUser =
-  JSON.parse(localStorage.getItem("nossoCaixaUser"));
+    if (!user) {
 
-if (hasActiveSession && savedUser) {
-  elements.authScreen.style.display = "none";
-  elements.mainApp.classList.remove("app-hidden");
-} else {
-  elements.authScreen.style.display = "";
-  elements.mainApp.classList.add("app-hidden");
-}
+        elements.authScreen.style.display = "";
+        elements.mainApp.classList.add("app-hidden");
+
+        return;
+
+    }
+
+    elements.authScreen.style.display = "none";
+    elements.mainApp.classList.remove("app-hidden");
+
+    await updateLoggedUser();
+
+});
 const savedTheme =
     localStorage.getItem("nossoCaixaTheme");
 

@@ -3,8 +3,18 @@ import { db } from "./firebase.js";
 import {
     doc,
     setDoc,
-    getDoc
+    getDoc,
+    updateDoc
 } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-firestore.js";
+
+export async function updateUserProfile(uid, data) {
+
+    await updateDoc(
+        doc(db, "users", uid),
+        data
+    );
+
+}
 
 export async function saveUserProfile(user, name) {
 
@@ -38,4 +48,4 @@ export async function loadUserProfile(uid) {
 
     return docSnap.data();
 
-}
+} 
